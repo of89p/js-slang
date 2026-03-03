@@ -1193,6 +1193,12 @@ const cmdEvaluators: CommandEvaluators = {
   [InstrType.CONTINUE_MARKER]() {},
 
   [InstrType.ENVIRONMENT]({ command, context }) {
+    const fn = (command as any).srcFunc;
+
+    if (fn && fn.pairReference) {
+      console.log("Success! Parent Pair:", fn.pairReference);
+    }
+
     // Restore environment
     while (currentEnvironment(context).id !== command.env.id) {
       popEnvironment(context)

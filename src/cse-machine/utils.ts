@@ -173,7 +173,14 @@ export const handleArrayCreation = (
     id: { value: uniqueId(context) },
     // Make environment writable as there are cases on the frontend where
     // environments of objects need to be modified
-    environment: { value: environment, writable: true }
+    environment: { value: environment, writable: true }, 
+    streamDetails: { value: {
+      nullaryFn: Node
+    }, 
+    writable: true, 
+    enumerable: true,
+    configurable: true
+    }
   })
 
   environment.heap.add(array as EnvArray)
@@ -191,11 +198,17 @@ export const handleArrayCreation = (
   // nullary stream function in the tail in the maps below for easier referencing
   if (array.length === 2 && typeof array[1] === 'function' && array[1].length === 0) {
     const fn = array[1] as any
-    if (!fn.id) {
-      Object.defineProperty(fn, 'id', { value: uniqueId(context), writable: true })
+    (array as any).streamDetails.nullaryFn = fn;
+
+    // Store this array reference into the nullary function
+    if (!fn.pairReference) {
+      Object.defineProperty(fn, 'pairReference', {
+        value: array,
+        writable: true,
+        enumerable: false, 
+        configurable: true
+      });
     }
-    context.pairToStreamFnId.set((array as any).id, fn.id)
-    context.streamFnIdToPairId.set(fn.id, (array as any).id)
   }
 
   let streamId: string | undefined = undefined

@@ -37,14 +37,12 @@ const closureToJS = (value: Closure, context: Context) => {
       }
     }
     newContext.runtime.control = new Control()
-    newContext.pendingStreamFnStack = []
     // Also need the env instruction to return back to the current environment at the end.
     // The call expression won't create one as there is only one item in the control.
     newContext.runtime.control.push(
       envInstr(currentEnvironment(context), currentTransformers(context), node),
       node
     )
-    newContext.pendingStreamFnStack.push(newContext.pendingStreamFnId)
     newContext.runtime.stash = new Stash()
     newContext.runtime.transformers = context.runtime.transformers
     const gen = generateCSEMachineStateStream(
@@ -95,7 +93,7 @@ export default class Closure extends Callable {
     transformers: Transformers,
     context: Context,
     dummyReturn?: boolean,
-    predefined?: boolean
+    predefined?: boolean, 
   ) {
     const functionBody: es.BlockStatement | StatementSequence =
       !isBlockStatement(node.body) && !isStatementSequence(node.body)
@@ -142,6 +140,9 @@ export default class Closure extends Callable {
   /** The original node that created this Closure */
   public originalNode: es.ArrowFunctionExpression
 
+  // For streams visualisation
+  public parentPairId: number
+
   constructor(
     public node: es.ArrowFunctionExpression,
     public environment: Environment,
@@ -170,5 +171,10 @@ export default class Closure extends Callable {
 
   public toString(): string {
     return generate(this.originalNode)
+  }
+
+  public updateParentPairId(arrayId: number): void {
+    this.parentPairId = arrayId;
+    // console.log("array id updated")
   }
 }

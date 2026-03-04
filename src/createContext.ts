@@ -149,12 +149,6 @@ export const createEmptyContext = <T>(
     chapter,
     externalSymbols,
     errors: [],
-    streamFnArr: [],
-    streamLineage: new Map<string, string[]>(),
-    pairToStreamFnId: new Map<string, string>(),
-    streamFnIdToPairId: new Map<string, string>(),
-    streamPairIdToStreamId: new Map<string, string>(),
-    pendingStreamFnStack: [],
     externalContext,
     runtime: createEmptyRuntime(),
     numberOfOuterEnvironments: 1,
@@ -168,7 +162,8 @@ export const createEmptyContext = <T>(
     unTypecheckedCode: [],
     typeEnvironment: createTypeEnvironment(chapter),
     previousPrograms: [],
-    shouldIncreaseEvaluationTimeout: false
+    shouldIncreaseEvaluationTimeout: false,
+    activeStreamFn: undefined
   }
 }
 

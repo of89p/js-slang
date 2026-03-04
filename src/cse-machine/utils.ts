@@ -175,7 +175,8 @@ export const handleArrayCreation = (
     // environments of objects need to be modified
     environment: { value: environment, writable: true }, 
     streamDetails: { value: {
-      nullaryFn: Node
+      parentNullaryFnId: undefined,
+      childNullaryFnId: undefined
     }, 
     writable: true, 
     enumerable: true,
@@ -183,16 +184,18 @@ export const handleArrayCreation = (
     }
   })
 
+  if(context.activeStreamFn != undefined) {
+    (array as any).streamDetails.parentNullaryFnId = context.activeStreamFn;
+    context.activeStreamFn = undefined;
+  }
+
+  // console.log("Handle array creation: "+ (array[1] as Closure).updateParentPairId((array as any).id));
+  // console.log("nullary fn id: "+(array[1] as Closure).id)
+  context.activeStreamFn = parseInt((array[1] as Closure).id, 10);
+
   environment.heap.add(array as EnvArray)
 
-  // if a streamfn was executed before this pair being created, 
-  // add this pair to that particular stream lineage
-  if (context.pendingStreamFnId) {
-    if (!context.streamLineage.get(context.pendingStreamFnId)) {
-      context.streamLineage.set(context.pendingStreamFnId, [])
-    }
-    context.streamLineage.get(context.pendingStreamFnId)?.push((array as any).id)
-  }
+
 
   // Checks if its a stream pair and places the pair id and assocciated 
   // nullary stream function in the tail in the maps below for easier referencing
@@ -211,31 +214,6 @@ export const handleArrayCreation = (
     }
   }
 
-  let streamId: string | undefined = undefined
-
-  if (context.pendingStreamFnId) {
-    const parentPairId = context.streamFnIdToPairId.get(context.pendingStreamFnId)
-    if (parentPairId) {
-      streamId = context.streamPairIdToStreamId.get(parentPairId)
-    }
-  }
-
-  if (streamId === undefined) {
-    // Handling when its a list being created
-    if (typeof array[1] !== 'function') {
-      if (array[1] === null) {
-        context.streamCount = context.streamCount === undefined ? 0 : context.streamCount + 1
-      } else {
-        context.streamCount = context.streamCount === undefined ? 0 : context.streamCount
-      }
-    } else {
-      context.streamCount = context.streamCount === undefined ? 0 : context.streamCount + 1
-    }
-    streamId = context.streamCount.toString()
-  }
-
-  // Link the pairIds to the streamIds through a map
-  context.streamPairIdToStreamId.set((array as any).id, streamId)
 }
 
 /**

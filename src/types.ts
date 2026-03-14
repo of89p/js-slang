@@ -53,7 +53,7 @@ export interface Context<T = any> {
   /** Stream Visualisation */
   activeStreamFn: number | undefined
 
-  streamId: number
+  streamCount: number
 
   /** Runtime Specific state */
   runtime: {

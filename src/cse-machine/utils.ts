@@ -176,7 +176,8 @@ export const handleArrayCreation = (
     environment: { value: environment, writable: true }, 
     streamDetails: { value: {
       parentNullaryFnId: undefined,
-      childNullaryFnId: undefined
+      childNullaryFnId: undefined,
+      streamId: undefined
     }, 
     writable: true, 
     enumerable: true,
@@ -201,7 +202,7 @@ export const handleArrayCreation = (
   // nullary stream function in the tail in the maps below for easier referencing
   if (array.length === 2 && typeof array[1] === 'function' && array[1].length === 0) {
     const fn = array[1] as any
-    (array as any).streamDetails.nullaryFn = fn;
+    (array as any).streamDetails.childNullaryFnId = fn;
 
     // Store this array reference into the nullary function
     if (!fn.pairReference) {
@@ -213,6 +214,23 @@ export const handleArrayCreation = (
       });
     }
   }
+
+  // Dealing with streamCount and setting the streamId of lists produced during eval_stream. Works because 
+  // list is evaluated recursively from the back, so when there is a null, the streamCount is incremented to
+  // push the list to the next line
+  if (typeof array[1] != 'function') {
+    if (array[1] == null) {
+      context.streamCount++
+    }
+    (array as any).streamDetails.streamId = context.streamCount
+  }
+
+  // Dealing with streamCount and setting the streamId of stream pairs
+  if ((array as any).streamDetails.parentNullaryFnId == undefined) {
+    context.streamCount++
+    (array as any).streamDetails.streamId = context.streamCount
+  }
+
 
 }
 

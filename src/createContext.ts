@@ -164,7 +164,7 @@ export const createEmptyContext = <T>(
     previousPrograms: [],
     shouldIncreaseEvaluationTimeout: false,
     activeStreamFn: undefined,
-    streamId: 0
+    streamCount: 0
   }
 }
 

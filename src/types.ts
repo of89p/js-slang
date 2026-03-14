@@ -51,7 +51,9 @@ export interface Context<T = any> {
   errors: SourceError[]
 
   /** Stream Visualisation */
-  activeStreamFn: number | undefined;
+  activeStreamFn: number | undefined
+
+  streamId: number
 
   /** Runtime Specific state */
   runtime: {

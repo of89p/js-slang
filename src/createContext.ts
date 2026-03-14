@@ -163,7 +163,8 @@ export const createEmptyContext = <T>(
     typeEnvironment: createTypeEnvironment(chapter),
     previousPrograms: [],
     shouldIncreaseEvaluationTimeout: false,
-    activeStreamFn: undefined
+    activeStreamFn: undefined,
+    streamId: 0
   }
 }
 

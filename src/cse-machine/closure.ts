@@ -13,6 +13,7 @@ import type { Context, Environment, StatementSequence, Value } from '../types'
 import * as ast from '../utils/ast/astCreator'
 import { envInstr } from './instrCreator'
 import { Control, Stash, Transformers, generateCSEMachineStateStream } from './interpreter'
+import { stream } from '../stdlib/stream'
 
 const closureToJS = (value: Closure, context: Context) => {
   function DummyClass(this: Closure) {
@@ -143,6 +144,8 @@ export default class Closure extends Callable {
   // For streams visualisation
   public parentPairId: number
 
+  public streamId: number
+
   constructor(
     public node: es.ArrowFunctionExpression,
     public environment: Environment,
@@ -176,5 +179,9 @@ export default class Closure extends Callable {
   public updateParentPairId(arrayId: number): void {
     this.parentPairId = arrayId;
     // console.log("array id updated")
+  }
+
+  public updateStreamId(streamId: number): void {
+    this.streamId = streamId
   }
 }

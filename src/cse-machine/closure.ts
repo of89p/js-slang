@@ -13,7 +13,6 @@ import type { Context, Environment, StatementSequence, Value } from '../types'
 import * as ast from '../utils/ast/astCreator'
 import { envInstr } from './instrCreator'
 import { Control, Stash, Transformers, generateCSEMachineStateStream } from './interpreter'
-import { stream } from '../stdlib/stream'
 
 const closureToJS = (value: Closure, context: Context) => {
   function DummyClass(this: Closure) {

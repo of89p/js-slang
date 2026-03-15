@@ -51,7 +51,7 @@ export interface Context<T = any> {
   errors: SourceError[]
 
   /** Stream Visualisation */
-  activeStreamFn: number | undefined
+  activeStreamFn: Function | undefined
 
   streamCount: number
 

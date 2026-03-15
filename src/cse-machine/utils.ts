@@ -176,8 +176,10 @@ export const handleArrayCreation = (
     environment: { value: environment, writable: true }, 
     streamDetails: { value: {
       parentNullaryFnId: undefined,
+      parentNullaryFn: undefined,
       childNullaryFnId: undefined,
-      streamId: undefined
+      streamId: undefined,
+      streamPairNumber: undefined
     }, 
     writable: true, 
     enumerable: true,
@@ -186,13 +188,14 @@ export const handleArrayCreation = (
   })
 
   if(context.activeStreamFn != undefined) {
-    (array as any).streamDetails.parentNullaryFnId = context.activeStreamFn;
-    context.activeStreamFn = undefined;
+    (array as any).streamDetails.parentNullaryFnId = (context.activeStreamFn as any).id
+    (array as any).streamDetails.parentNullaryFn = context.activeStreamFn
+    context.activeStreamFn = undefined
   }
 
   // console.log("Handle array creation: "+ (array[1] as Closure).updateParentPairId((array as any).id));
   // console.log("nullary fn id: "+(array[1] as Closure).id)
-  context.activeStreamFn = parseInt((array[1] as Closure).id, 10);
+  context.activeStreamFn = array[1];
 
   environment.heap.add(array as EnvArray)
 
@@ -202,7 +205,7 @@ export const handleArrayCreation = (
   // nullary stream function in the tail in the maps below for easier referencing
   if (array.length === 2 && typeof array[1] === 'function' && array[1].length === 0) {
     const fn = array[1] as any
-    (array as any).streamDetails.childNullaryFnId = fn;
+    (array as any).streamDetails.childNullaryFnId = fn
 
     // Store this array reference into the nullary function
     if (!fn.pairReference) {
@@ -222,14 +225,19 @@ export const handleArrayCreation = (
     if (array[1] == null) {
       context.streamCount++
     }
-    (array as any).streamDetails.streamId = context.streamCount
   }
-
-  // Dealing with streamCount and setting the streamId of stream pairs
+    // Dealing with streamCount and setting the streamId of stream pairs
   if ((array as any).streamDetails.parentNullaryFnId == undefined) {
     context.streamCount++
-    (array as any).streamDetails.streamId = context.streamCount
+    (array as any).streamDetails.streamPairNumber = 0
+  } else {
+    const prevPair = (array as any).streamDetails.parentNullaryFn.pairReference;
+    (array as any).streamDetails.streamPairNumber = prevPair.streamDetails.streamPairNumber + 1
   }
+
+  (array as any).streamDetails.streamId = context.streamCount
+
+
 
 
 }
